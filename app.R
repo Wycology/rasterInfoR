@@ -5,10 +5,13 @@ library(shiny)
 library(shinydashboard)
 library(leaflet)
 
+species <- shapefile(system.file("external/species.shp", package="sdm"))
+
 server <- function(input, output) {
   
-  
-  ras <- stack(list.files("/path/to/your/rasters", full.names=T))
+  ras <- stack(list.files(system.file("external", package="sdm"), 
+                          pattern='asc$',full.names = T))
+  crs(ras) <- crs(species)
   
   #Get Coordinates for Basemap
   xBase <- (extent(ras)[2] + extent(ras)[1]) / 2
@@ -41,7 +44,7 @@ server <- function(input, output) {
   
   output$rasvalue   <- renderText(value())
   
-  Coords <- reactive({
+  Coords <- reactive({+
     req(input$rasPlot_click$x)
     
     c(input$rasPlot_click$x, input$rasPlot_click$y)
@@ -51,7 +54,7 @@ server <- function(input, output) {
   
 output$df    <- renderTable({
   
- valdf        <-  data.frame("Layer" = names(ras), "Value" = unlist(value())[1,])
+ valdf <- data.frame("Layer" = names(ras), "Value" = unlist(value())[1,])
  colnames(valdf) <- c("Name","Value")
  rownames(valdf)  <- 1:nlayers(ras)
  valdf
@@ -63,7 +66,6 @@ output$df    <- renderTable({
 value  <- eventReactive(input$rasPlot_click$x,{
    extract(ras,cellFromXY(ras,Coords()))
    })
-
 
 output$Map <- renderLeaflet({
   leaflet() %>% 
