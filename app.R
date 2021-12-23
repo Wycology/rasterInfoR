@@ -6,12 +6,11 @@ library(shinydashboard)
 library(leaflet)
 
 species <- shapefile(system.file("external/species.shp", package="sdm"))
-
-server <- function(input, output) {
-  
-  ras <- stack(list.files(system.file("external", package="sdm"), 
+ras <- stack(list.files(system.file("external", package="sdm"), 
                           pattern='asc$',full.names = T))
-  crs(ras) <- crs(species)
+crs(ras) <- crs(species)
+server <- function(input, output) {
+  ras
   
   #Get Coordinates for Basemap
   xBase <- (extent(ras)[2] + extent(ras)[1]) / 2
@@ -32,7 +31,6 @@ server <- function(input, output) {
       
       
   
-
   output$rasProj       <- renderText(projection(ras))
   output$rasRes        <- renderText(res(ras))
   output$rasDim        <- renderText(dim(ras))
@@ -127,7 +125,8 @@ ui = dashboardPage(
     ),
     fluidRow(
       box(
-        title = "Time Series", status = "warning", solidHeader = TRUE, width="100%",
+        title = "Time Series", status = "warning", 
+        solidHeader = TRUE, width="100%",
         plotOutput("TSplot")
       )
     ),
