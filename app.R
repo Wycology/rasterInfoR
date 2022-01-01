@@ -106,7 +106,8 @@ ui = dashboardPage(
         title = "Interactive Image Analysis", id = "tabset",
         tabPanel("Raster", 
                  plotOutput("rasPlot", click = "rasPlot_click"),
-                 sliderInput("layer", "Plot Timestep", min = 1, max = nlayers(ras),1, width="100%")),
+                 sliderInput("layer", "Plot Timestep", min = 1, 
+                             animate = TRUE, max = nlayers(ras),1, width="100%")),
         tabPanel("Basemap", leafletOutput("Map", width = "100%"))
       ),
       box(
